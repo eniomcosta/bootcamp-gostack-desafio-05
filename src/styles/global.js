@@ -10,10 +10,15 @@ export default createGlobalStyle`
 
     html, body, #root {
         min-height: 100%;
+        font-family: Arial, Helvetica, sans-serif
     }
 
     body {
         background: #7159c1;
-        -webkit-font-smoothing: antialiased !important;
+        -webkit-font-smoothing: antialiased !important
+    }
+
+    button {
+      cursor: pointer;
     }
 `;
