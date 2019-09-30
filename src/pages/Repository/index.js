@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import Loader from 'react-loader-spinner';
+import Container from '../../components/Container';
+
 import api from '../../services/api';
+
+import { Loading, Owner } from './styles';
 
 export default class Repository extends Component {
   constructor(props) {
@@ -37,7 +43,25 @@ export default class Repository extends Component {
   render() {
     const { repository, issues, loading } = this.state;
 
-    return <h1>Repository</h1>;
+    if (loading) {
+      return (
+        <Loading>
+          Loading
+          <Loader type="Oval" height={30} width={30} color="#7159c1" />
+        </Loading>
+      );
+    }
+
+    return (
+      <Container>
+        <Owner>
+          <Link to="/">Back to repositories</Link>
+          <img src={repository.owner.avatar_url} alt={repository.owner.login} />
+          <h1>{repository.name}</h1>
+          <p>{repository.description}</p>
+        </Owner>
+      </Container>
+    );
   }
 }
 
