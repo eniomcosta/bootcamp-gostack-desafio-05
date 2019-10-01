@@ -7,8 +7,8 @@ import Container from '../../components/Container';
 import api from '../../services/api';
 
 class Main extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       newRepo: '',
       repositories: [],
@@ -44,17 +44,16 @@ class Main extends Component {
 
     this.setState({ loading: true });
 
-    const { newRepo, repositories } = this.state;
+    const { newRepo, repositories, apiValidation } = this.state;
 
     let response;
     try {
       response = await api.get(`repos/${newRepo}`);
-      this.setState({ apiValidation: true });
+      this.setState({ loading: false, apiValidation: true });
     } catch (e) {
-      this.setState({ loading: false, apiValidation: false });
+      throw new Error('Invalid Repository', e);
     }
 
-    const { apiValidation } = this.state;
     if (apiValidation) {
       const data = {
         name: response.data.full_name,
@@ -64,7 +63,6 @@ class Main extends Component {
         newRepo: '',
         repositories: [...repositories, data],
         loading: false,
-        apiValidation: true,
       });
     }
   };
@@ -88,7 +86,7 @@ class Main extends Component {
             className={!apiValidation ? 'border-red' : ''}
           />
 
-          <SubmitButton loading={loading}>
+          <SubmitButton loading={loading ? 1 : 0}>
             {loading ? (
               <FaSpinner color="#FFF" size={14} />
             ) : (
