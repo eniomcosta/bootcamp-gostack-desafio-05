@@ -12,6 +12,11 @@ export const Form = styled.form`
     border-radius: 4px;
     font-size: 16px;
   }
+
+  .border-red {
+    border: 1px solid red;
+    background: #d5aaa9;
+  }
 `;
 
 const rotate = keyframes`

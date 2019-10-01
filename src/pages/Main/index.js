@@ -13,6 +13,7 @@ class Main extends Component {
       newRepo: '',
       repositories: [],
       loading: false,
+      apiValidation: true,
     };
   }
 
@@ -45,21 +46,31 @@ class Main extends Component {
 
     const { newRepo, repositories } = this.state;
 
-    const response = await api.get(`repos/${newRepo}`);
+    let response;
+    try {
+      response = await api.get(`repos/${newRepo}`);
+      this.setState({ apiValidation: true });
+    } catch (e) {
+      this.setState({ loading: false, apiValidation: false });
+    }
 
-    const data = {
-      name: response.data.full_name,
-    };
+    const { apiValidation } = this.state;
+    if (apiValidation) {
+      const data = {
+        name: response.data.full_name,
+      };
 
-    this.setState({
-      newRepo: '',
-      repositories: [...repositories, data],
-      loading: false,
-    });
+      this.setState({
+        newRepo: '',
+        repositories: [...repositories, data],
+        loading: false,
+        apiValidation: true,
+      });
+    }
   };
 
   render() {
-    const { newRepo, repositories, loading } = this.state;
+    const { newRepo, repositories, loading, apiValidation } = this.state;
 
     return (
       <Container>
@@ -74,6 +85,7 @@ class Main extends Component {
             placeholder="Add repository"
             value={newRepo}
             onChange={this.handleInputChange}
+            className={!apiValidation ? 'border-red' : ''}
           />
 
           <SubmitButton loading={loading}>
