@@ -80,26 +80,14 @@ export default class Repository extends Component {
     return issues;
   }
 
-  async previousPage() {
+  async handlePage(action) {
     const { activeIndex, filters } = this.state;
     let { currentPage } = this.state;
 
     const { state } = filters[activeIndex];
 
-    currentPage -= 1;
-
-    const issues = await this.findRepositories(currentPage, state);
-
-    this.setState({ issues: issues.data, currentPage });
-  }
-
-  async nextPage() {
-    const { activeIndex, filters } = this.state;
-    let { currentPage } = this.state;
-
-    const { state } = filters[activeIndex];
-
-    currentPage += 1;
+    // Used this way because prettier/eslint warning
+    currentPage = action === 'next' ? currentPage + 1 : currentPage - 1;
 
     const issues = await this.findRepositories(currentPage, state);
 
@@ -165,13 +153,13 @@ export default class Repository extends Component {
           {issues.length >= 5 ? (
             <IssuePagination>
               {currentPage > 1 ? (
-                <button type="button" onClick={() => this.previousPage()}>
+                <button type="button" onClick={() => this.handlePage('back')}>
                   &#60; Previous
                 </button>
               ) : (
                 ''
               )}
-              <button type="button" onClick={() => this.nextPage()}>
+              <button type="button" onClick={() => this.handlePage('next')}>
                 Next &#62;
               </button>
             </IssuePagination>
