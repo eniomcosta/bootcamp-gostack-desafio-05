@@ -162,18 +162,22 @@ export default class Repository extends Component {
             </li>
           ))}
 
-          <IssuePagination>
-            {currentPage > 1 ? (
-              <button type="button" onClick={() => this.previousPage()}>
-                &#60; Previous
+          {issues.length >= 5 ? (
+            <IssuePagination>
+              {currentPage > 1 ? (
+                <button type="button" onClick={() => this.previousPage()}>
+                  &#60; Previous
+                </button>
+              ) : (
+                ''
+              )}
+              <button type="button" onClick={() => this.nextPage()}>
+                Next &#62;
               </button>
-            ) : (
-              ''
-            )}
-            <button type="button" onClick={() => this.nextPage()}>
-              Next &#62;
-            </button>
-          </IssuePagination>
+            </IssuePagination>
+          ) : (
+            ''
+          )}
         </IssueList>
       </Container>
     );
