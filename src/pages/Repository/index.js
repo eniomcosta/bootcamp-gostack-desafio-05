@@ -6,7 +6,13 @@ import Container from '../../components/Container';
 
 import api from '../../services/api';
 
-import { Loading, Owner, IssueList, FilterState } from './styles';
+import {
+  Loading,
+  Owner,
+  IssueList,
+  FilterState,
+  IssuePagination,
+} from './styles';
 
 export default class Repository extends Component {
   constructor(props) {
@@ -21,6 +27,7 @@ export default class Repository extends Component {
         { state: 'all', label: 'All', active: false },
       ],
       activeIndex: 0,
+      currentPage: 1,
     };
   }
 
@@ -29,15 +36,18 @@ export default class Repository extends Component {
 
     const repoName = decodeURIComponent(match.params.repository);
 
-    const [repository, issues] = await Promise.all([
-      api.get(`repos/${repoName}`),
-      api.get(`repos/${repoName}/issues`, {
-        params: {
-          state: 'open',
-          per_page: 5,
-        },
-      }),
-    ]);
+    // const [repository, issues] = await Promise.all([
+    //   api.get(`repos/${repoName}`),
+    //   api.get(`repos/${repoName}/issues?page=${currentPage}`, {
+    //     params: {
+    //       state: 'open',
+    //       per_page: 5,
+    //     },
+    //   }),
+    // ]);
+
+    const repository = await api.get(`repos/${repoName}`);
+    const issues = await this.findRepositories(1, 'open');
 
     this.setState({
       repository: repository.data,
@@ -47,25 +57,64 @@ export default class Repository extends Component {
   }
 
   async filterState(index) {
-    const { match } = this.props;
     const { filters } = this.state;
-
-    const repoName = decodeURIComponent(match.params.repository);
 
     const { state } = filters[index];
 
-    const issues = await api.get(`repos/${repoName}/issues`, {
+    const issues = await this.findRepositories(1, state);
+
+    this.setState({ issues: issues.data, activeIndex: index, currentPage: 1 });
+  }
+
+  async findRepositories(page, state) {
+    const { match } = this.props;
+    const repoName = decodeURIComponent(match.params.repository);
+
+    const issues = await api.get(`repos/${repoName}/issues?page=${page}`, {
       params: {
         state,
         per_page: 5,
       },
     });
 
-    this.setState({ issues: issues.data, activeIndex: index });
+    return issues;
+  }
+
+  async previousPage() {
+    const { activeIndex, filters } = this.state;
+    let { currentPage } = this.state;
+
+    const { state } = filters[activeIndex];
+
+    currentPage -= 1;
+
+    const issues = await this.findRepositories(currentPage, state);
+
+    this.setState({ issues: issues.data, currentPage });
+  }
+
+  async nextPage() {
+    const { activeIndex, filters } = this.state;
+    let { currentPage } = this.state;
+
+    const { state } = filters[activeIndex];
+
+    currentPage += 1;
+
+    const issues = await this.findRepositories(currentPage, state);
+
+    this.setState({ issues: issues.data, currentPage });
   }
 
   render() {
-    const { repository, issues, loading, filters, activeIndex } = this.state;
+    const {
+      repository,
+      issues,
+      loading,
+      filters,
+      activeIndex,
+      currentPage,
+    } = this.state;
 
     if (loading) {
       return (
@@ -112,6 +161,19 @@ export default class Repository extends Component {
               </div>
             </li>
           ))}
+
+          <IssuePagination>
+            {currentPage > 1 ? (
+              <button type="button" onClick={() => this.previousPage()}>
+                &#60; Previous
+              </button>
+            ) : (
+              ''
+            )}
+            <button type="button" onClick={() => this.nextPage()}>
+              Next &#62;
+            </button>
+          </IssuePagination>
         </IssueList>
       </Container>
     );

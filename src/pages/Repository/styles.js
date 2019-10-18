@@ -150,3 +150,19 @@ export const FilterState = styled.div`
     }
   }
 `;
+
+export const IssuePagination = styled.div`
+  display: flex;
+  justify-content: center;
+  margin: 20px;
+  button {
+    margin: 0px 10px;
+    padding: 5px 10px;
+    height: 30px;
+    width: 100px;
+    background: #fff;
+    color: #7159c1;
+    border: 1px solid #7159c1;
+    border-radius: 4px;
+  }
+`;
