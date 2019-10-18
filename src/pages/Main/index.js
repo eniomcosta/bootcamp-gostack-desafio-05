@@ -50,7 +50,11 @@ class Main extends Component {
     try {
       response = await api.get(`repos/${newRepo}`);
       this.setState({ apiValidation: true });
-    } catch (e) {
+
+      if (this.checkRepositoryDuplicity()) {
+        throw new Error('Repository already added');
+      }
+    } catch (err) {
       this.setState({ loading: false, apiValidation: false });
     }
 
@@ -68,6 +72,14 @@ class Main extends Component {
       });
     }
   };
+
+  checkRepositoryDuplicity() {
+    const { newRepo, repositories } = this.state;
+
+    const hasRepo = repositories.find(r => r.name === newRepo);
+
+    return hasRepo;
+  }
 
   render() {
     const { newRepo, repositories, loading, apiValidation } = this.state;
@@ -88,7 +100,8 @@ class Main extends Component {
             className={!apiValidation ? 'border-red' : ''}
           />
 
-          <SubmitButton loading={loading}>
+          {/* Was used 1:0 to fix warning about receive non-boolean attribute on browser console */}
+          <SubmitButton loading={loading ? 1 : 0}>
             {loading ? (
               <FaSpinner color="#FFF" size={14} />
             ) : (
