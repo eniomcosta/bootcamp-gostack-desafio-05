@@ -164,5 +164,10 @@ export const IssuePagination = styled.div`
     color: #7159c1;
     border: 1px solid #7159c1;
     border-radius: 4px;
+
+    &:hover {
+      color: black;
+      border: 1px solid black;
+    }
   }
 `;
